@@ -17,8 +17,21 @@ DEFAULT_API_URL = "https://demo.mediacms.io/api/v1/media/"
 DEFAULT_USERNAME = "MediaCMSTest"
 DEFAULT_PASSWORD = "Pn@32jGufq9@^HT^A$sG"
 
+# Determine app directory: exe folder if frozen, else script folder
+if getattr(sys, "frozen", False):
+    # Running in a PyInstaller bundle
+    app_dir = os.path.dirname(sys.executable)
+else:
+    # Running as a normal script
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Path to editable config.ini next to the exe/script
+_config_path = os.path.join(app_dir, "config.ini")
+
+# Load config
 config = configparser.ConfigParser()
-_config_path = os.path.join(os.path.dirname(__file__), "config.ini") if "__file__" in globals() else "config.ini"
+if os.path.exists(_config_path):
+    config.read(_config_path)
 
 config_found = False
 try:
