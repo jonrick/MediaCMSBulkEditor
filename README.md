@@ -57,9 +57,9 @@ pip install -r requirements.txt
    app_title = MediaCMS Video Details Editor
 
    [auth]
-   API_URL = https://your-mediacms-instance/api/v1/media/
-   USERNAME = your_username
-   PASSWORD = your_password
+   api_url = https://your-mediacms-instance/api/v1/media/
+   username = your_username
+   password = your_password
    ```
 
    * **API_URL**: the base API URL for your MediaCMS instance (include the trailing slash). Example: `https://example.com/api/v1/media/`
@@ -102,5 +102,6 @@ If you want to contribute large features, open an issue first to discuss.
 ## 📜 License
 
 See the `LICENSE` file in this repository for license terms. This project is intended for personal / non-commercial use. Derivative works should remain open and reference this project.
+
 
 ---
