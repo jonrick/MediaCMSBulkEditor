@@ -12,7 +12,6 @@ from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QColor
 
 # -------- Configuration (from config.ini with fallback) --------
-# Default values (exactly your original hard-coded defaults)
 DEFAULT_APP_TITLE = "MediaCMS Video Details Editor"
 DEFAULT_API_URL = "https://demo.mediacms.io/api/v1/media/"
 DEFAULT_USERNAME = "MediaCMSTest"
@@ -86,7 +85,6 @@ class FetchThread(QThread):
         url = API_URL
         try:
             while url:
-                # use robust_request to handle transient DNS/connection issues
                 resp = robust_request("get", url, auth=(USERNAME, PASSWORD))
                 if resp.status_code != 200:
                     self.error.emit(f"Failed to fetch media: {resp.status_code}")
@@ -99,7 +97,6 @@ class FetchThread(QThread):
                         "description": item.get("description", ""),
                         "staged_title": None,
                         "staged_description": None,
-                        # store api_url if provided by the API (older working version uses this)
                         "api_url": item.get("api_url")
                     }
                     all_items.append((token, item.get("title", ""), item.get("description", "")))
@@ -122,15 +119,11 @@ class PushThread(QThread):
             for token in self.tokens:
                 d = video_data.get(token)
                 if not d:
-                    # defensive: token disappeared
                     self.error.emit(f"No data for token {token}")
                     continue
 
-                # Determine which URL to PUT to:
-                # Prefer the api_url returned by the API (older working code used this).
                 url = d.get("api_url")
                 if not url:
-                    # fallback: try a sensible REST-style URL (no /update/ suffix).
                     url = f"{API_URL}{token}/"
 
                 if not url:
@@ -143,28 +136,23 @@ class PushThread(QThread):
                 }
 
                 try:
-                    # use robust_request for PUT as well
                     resp = robust_request("put", url, auth=(USERNAME, PASSWORD), data=payload)
                 except Exception as e:
                     self.error.emit(f"Network error for {token}: {e}")
                     continue
 
-                # Accept 200 or 201 as success (same as your older working code)
                 if resp.status_code in (200, 201):
                     d["title"] = payload["title"]
                     d["description"] = payload["description"]
                     d["staged_title"] = None
                     d["staged_description"] = None
                 else:
-                    # Report the error and continue with next token (do not abort whole batch)
-                    # Provide status code and (short) response text for debugging
                     text_snippet = ""
                     try:
                         text_snippet = resp.text[:300]
                     except Exception:
                         pass
                     self.error.emit(f"Failed to push {token}: {resp.status_code} {text_snippet}")
-                    # continue to next token
             self.done.emit()
         except Exception as e:
             self.error.emit(str(e))
@@ -189,7 +177,6 @@ class MediaEditor(QWidget):
         self.table.setColumnWidth(1, 550)  # Description
         #self.table.setColumnWidth(2, 200)  # Token
         self.table.horizontalHeader().setStretchLastSection(True)
-        # Use QAbstractItemView enum for selection behavior
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         layout.addWidget(self.table)
         self.table.itemSelectionChanged.connect(self.on_selection)
@@ -248,7 +235,6 @@ class MediaEditor(QWidget):
             title_item = QTableWidgetItem(title)
             desc_item = QTableWidgetItem(desc)
             item_token = QTableWidgetItem(token)
-            # token should not be editable
             title_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
             desc_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
             item_token.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
@@ -258,7 +244,6 @@ class MediaEditor(QWidget):
             self.update_row_color(i, token)
 
     def update_row_color(self, row, token):
-        # Defensive: ensure the row's items exist
         for c in range(3):
             if self.table.item(row, c) is None:
                 self.table.setItem(row, c, QTableWidgetItem(""))
