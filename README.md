@@ -19,22 +19,6 @@ A lightweight Python GUI for bulk editing **titles** and **descriptions** of vid
 
 ---
 
-## 📦 Requirements
-
-* **Python 3.9+**
-* Dependencies listed in `requirements.txt`:
-
-  * `requests`
-  * `PySide6`
-
-Install dependencies with:
-
-```
-pip install -r requirements.txt
-```
-
----
-
 ## ⚙️ Setup
 
 1. Clone the repository:
@@ -64,6 +48,22 @@ pip install -r requirements.txt
 
    * **API_URL**: the base API URL for your MediaCMS instance (include the trailing slash). Example: `https://example.com/api/v1/media/`
    * **USERNAME / PASSWORD**: account credentials with permission to edit media metadata.
+
+---
+
+## 📦 Requirements
+
+* **Python 3.9+**
+* Dependencies listed in `requirements.txt`:
+
+  * `requests`
+  * `PySide6`
+
+Install dependencies with:
+
+```
+pip install -r requirements.txt
+```
 
 ---
 
@@ -105,3 +105,4 @@ See the `LICENSE` file in this repository for license terms. This project is int
 
 
 ---
+
